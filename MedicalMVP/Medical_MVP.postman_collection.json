@@ -1,0 +1,294 @@
+{
+	"info": {
+		"_postman_id": "df6c41b8-6a52-475c-bd08-f40442ab6b90",
+		"name": "Medical MVP - Controles Médicos Rurales",
+		"description": "Colección de Postman para probar todos los endpoints de la API REST del MVP de Controles Médicos Rurales. Incluye script automático para guardar el token JWT tras el login.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Iniciar Sesión (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Guardar el token automáticamente en las variables de la colección si la petición es exitosa",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set(\"token\", jsonData.token);",
+									"        console.log(\"Token guardado automáticamente en la colección: \" + jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"profesional\",\n    \"password\": \"prof123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica al usuario. Si usas 'admin' / 'admin123' iniciarás como Administrador. Si usas 'profesional' / 'prof123' iniciarás como Profesional de Salud. Guarda el token en las variables para el resto de peticiones."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pacientes",
+			"item": [
+				{
+					"name": "Listar Pacientes (Con búsqueda)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/pacientes?search=Luz",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pacientes"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Luz",
+									"description": "Filtro opcional (cédula, nombre o apellido)"
+								}
+							]
+						},
+						"description": "Obtiene la lista de pacientes registrados. Permite buscar usando el parámetro de query `search`."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Detalle del Paciente e Historial",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/pacientes/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pacientes",
+								"1"
+							]
+						},
+						"description": "Obtiene el detalle completo de un paciente específico, incluyendo el historial cronológico inverso de todos sus controles médicos registrados."
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Nuevo Paciente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cedula\": \"1022334455\",\n    \"nombre\": \"Diana Carolina\",\n    \"apellido\": \"Restrepo Gómez\",\n    \"fecha_nacimiento\": \"1988-05-12\",\n    \"genero\": \"Femenino\",\n    \"direccion\": \"Vereda La Linda, Finca El Recuerdo\",\n    \"telefono\": \"3129876543\",\n    \"comunidad\": \"Vereda La Linda\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/pacientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pacientes"
+							]
+						},
+						"description": "Crea un nuevo paciente en el sistema."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Controles Médicos",
+			"item": [
+				{
+					"name": "Listar Todos los Controles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/controles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"controles"
+							]
+						},
+						"description": "Obtiene una lista cronológica inversa de todos los controles médicos registrados en el sistema, mostrando paciente y profesional de la salud asignados."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Detalle del Control",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/controles/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"controles",
+								"1"
+							]
+						},
+						"description": "Obtiene la ficha detallada de un control médico en base a su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Nuevo Control Médico",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paciente_id\": 1,\n    \"presion_arterial\": \"120/80\",\n    \"peso\": 72.4,\n    \"temperatura\": 36.6,\n    \"observaciones\": \"Chequeo de rutina. Signos vitales estables. Paciente asintomática.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/controles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"controles"
+							]
+						},
+						"description": "Registra una nueva medición o control clínico sobre un paciente. Automáticamente asocia al usuario logueado en la cabecera como el profesional responsable."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Configuración e Informes",
+			"item": [
+				{
+					"name": "Obtener Estadísticas Globales (Solo Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/config/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"config",
+								"stats"
+							]
+						},
+						"description": "Devuelve las métricas del sistema (número total de pacientes, controles y usuarios). Endpoint protegido por roles, solo accesible para la cuenta 'admin'."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estado del Sistema (Health)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Endpoint público para verificar que el servidor de la API REST está activo y listo para operar."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
