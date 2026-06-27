@@ -1,97 +1,139 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# MVP - Controles Médicos Rurales (Proyecto Final)
 
-# Getting Started
+Este proyecto es una aplicación web y móvil integrada para la gestión de controles médicos en zonas rurales de difícil acceso. Está diseñado para ser operado por brigadas de salud en tablets Android (online) y se conecta a una API REST centralizada para almacenar información de pacientes, signos vitales y controles.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+El sistema cuenta con un control de roles integrado para garantizar la seguridad de los datos:
+* **Administrador:** Acceso a métricas del sistema, configuraciones globales y reportes consolidados.
+* **Profesional de Salud:** Registro de nuevos pacientes, toma de signos vitales (presión arterial, peso, temperatura) e historial clínico.
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🛠️ Estructura del Proyecto
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+El repositorio está dividido en dos partes principales:
+1. **`backend/`**: Servidor API REST construido con Node.js, Express y Sequelize ORM (soporta PostgreSQL y SQLite).
+2. **Raíz (`./`)**: Aplicación móvil construida en React Native con navegación e integraciones listas.
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## 🚀 Guía de Instalación e Inicialización
+
+Sigue los siguientes pasos para poner en marcha tanto el servidor API como la aplicación móvil:
+
+### Requisitos Previos
+* **Node.js** (versión 16 o superior).
+* **npm** o **yarn**.
+* **Android SDK** y un emulador configurado (o un dispositivo físico en modo depuración USB).
+
+---
+
+### Paso 1: Configurar y Arrancar el Backend
+
+1. Navega al directorio del backend:
+   ```bash
+   cd backend
+   ```
+
+2. Instala las dependencias necesarias:
+   ```bash
+   npm install
+   ```
+
+3. Configura las variables de entorno creando un archivo `.env` en la carpeta `backend/`. 
+   
+   * **Opción A (Recomendada - SQLite local ligero sin configurar servidores):**
+     Copia el siguiente contenido en tu `.env`:
+     ```env
+     PORT=3000
+     JWT_SECRET=clave_secreta_super_segura_para_el_mvp_2024
+     DB_DIALECT=sqlite
+     ```
+   
+   * **Opción B (PostgreSQL en Docker o Servidor local):**
+     Copia el siguiente contenido en tu `.env`:
+     ```env
+     PORT=3000
+     JWT_SECRET=clave_secreta_super_segura_para_el_mvp_2024
+     DB_HOST=localhost
+     DB_PORT=5432
+     DB_NAME=medical_mvp
+     DB_USER=postgres
+     DB_PASSWORD=tu_contraseña_aqui
+     ```
+
+4. Ejecuta el script de semilla (Seeder) para crear las tablas y poblar la base de datos con los datos de prueba iniciales (5 usuarios de prueba, 12 pacientes y 15 controles):
+   ```bash
+   # Si usas SQLite local:
+   DB_DIALECT=sqlite npm run seed
+   
+   # Si usas PostgreSQL:
+   npm run seed
+   ```
+
+5. Inicia el servidor en modo desarrollo:
+   ```bash
+   # Si usas SQLite local:
+   DB_DIALECT=sqlite npm run dev
+   
+   # Si usas PostgreSQL:
+   npm run dev
+   ```
+   El servidor estará escuchando en: `http://localhost:3000`
+
+---
+
+### Paso 2: Configurar y Arrancar la App Móvil (React Native)
+
+1. Regresa a la raíz del proyecto e instala las dependencias del frontend:
+   ```bash
+   cd ..
+   npm install
+   ```
+
+2. Configura el enlace de conexión con la API en la variable `API_BASE_URL` dentro de del archivo:
+   `src/services/api.js` (Línea 17)
+   * Si usas el **emulador de Android**, configúralo como: `'http://10.0.2.2:3000/api'`
+   * Si usas un **dispositivo móvil físico**, pon la IP local de tu computador (ej. `'http://192.168.1.15:3000/api'`).
+   * Si expones tu backend con **Ngrok**, pon la URL HTTPS generada (ej. `'https://xxxx.ngrok-free.app/api'`).
+
+3. Inicia el empaquetador de React Native (Metro Bundler):
+   ```bash
+   npm start
+   ```
+
+4. En una pestaña nueva de la terminal, arranca la aplicación en el emulador de Android:
+   ```bash
+   npm run android
+   ```
+
+---
+
+## 🔑 Credenciales de Acceso para Pruebas
+
+Usa las siguientes cuentas para acceder a la aplicación desde la pantalla de login:
+
+* **Rol Administrador:**
+  * **Usuario:** `admin` | **Contraseña:** `admin123`
+  * **Usuario Secundario:** `admin2` | **Contraseña:** `admin123`
+* **Rol Profesional de Salud:**
+  * **Usuario:** `profesional` | **Contraseña:** `prof123`
+  * **Usuario Secundario:** `medico_lucia` | **Contraseña:** `prof123`
+  * **Usuario Terciario:** `medico_camilo` | **Contraseña:** `prof123`
+
+---
+
+## 🧪 Pruebas y Colección de Postman
+
+### Ejecución de Pruebas Unitarias/Funcionales
+El backend cuenta con una suite completa de 40 pruebas unitarias que evalúan el 100% de la lógica del negocio. Para ejecutarlas:
+```bash
+cd backend
+DB_DIALECT=sqlite node test-api.js
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### Colección de Postman
+En la raíz del proyecto se encuentra el archivo **`Medical_MVP.postman_collection.json`**. 
+Para utilizarlo:
+1. Impórtalo en Postman.
+2. Ejecuta la petición de **Iniciar Sesión (Login)** con cualquiera de las credenciales de prueba.
+3. El script interno de la colección guardará automáticamente el token JWT para autorizar todas las demás llamadas de consulta y registro.
