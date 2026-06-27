@@ -19,9 +19,8 @@ export default function RegistroControlScreen({ navigation }) {
     setLoading(true);
     try {
       const payload = {
-        pacienteId,
-        fecha: new Date().toISOString(),
-        presionArterial,
+        paciente_id: pacienteId,
+        presion_arterial: presionArterial,
         peso,
         temperatura,
         observaciones
