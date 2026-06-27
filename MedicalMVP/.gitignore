@@ -9,6 +9,10 @@ package-lock.json
 *.apk
 *.aab
 android/app/build/
+android/build/
+android/.gradle/
+android/app/.cxx/
+android/local.properties
 ios/Pods/
 
 # Logs
@@ -28,3 +32,9 @@ Thumbs.db
 
 # Docker volumes
 pgdata/
+
+# Local databases
+*.sqlite
+
+# Screenshots
+*.png
