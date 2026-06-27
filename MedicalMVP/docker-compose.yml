@@ -1,0 +1,88 @@
+version: '3.8'
+
+# ============================================================
+# Docker Compose - MVP Controles Médicos Rurales
+# Servicios: Base de Datos (PostgreSQL), Backend (Express), App Móvil (React Native)
+# ============================================================
+
+services:
+
+  # --------------------------------------------------------
+  # SERVICIO 1: BASE DE DATOS PostgreSQL
+  # --------------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: medical_mvp_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: medical_mvp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: medical2024
+    volumes:
+      # Volumen persistente para que los datos NO se pierdan al reiniciar
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # --------------------------------------------------------
+  # SERVICIO 2: BACKEND API (Node.js + Express)
+  # --------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medical_mvp_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: medical_mvp
+      DB_USER: postgres
+      DB_PASSWORD: medical2024
+      JWT_SECRET: mvp_controles_medicos_secret_key_2024
+      PORT: 3000
+    volumes:
+      # Montar código del backend para desarrollo con hot-reload (nodemon)
+      - ./backend:/app
+      # Evitar sobreescribir node_modules del contenedor
+      - /app/node_modules
+
+  # --------------------------------------------------------
+  # SERVICIO 3: APP MÓVIL (React Native - Metro Bundler)
+  # --------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medical_mvp_app
+    ports:
+      - "8081:8081" # Metro Bundler
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      # La app se conectará al backend a través de esta URL
+      # Reemplazar con la URL de ngrok cuando se exponga
+      - API_BASE_URL=http://backend:3000/api
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+
+# --------------------------------------------------------
+# VOLÚMENES PERSISTENTES
+# --------------------------------------------------------
+volumes:
+  pgdata:
+    driver: local
