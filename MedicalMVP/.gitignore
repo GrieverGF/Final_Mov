@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+package-lock.json
+
+# Variables de entorno
+.env
+
+# Builds
+*.apk
+*.aab
+android/app/build/
+ios/Pods/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Metro
+.metro-health-check*
+
+# Docker volumes
+pgdata/
