@@ -7,6 +7,7 @@ import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import RegistroControlScreen from '../screens/RegistroControlScreen';
 import HistorialPacienteScreen from '../screens/HistorialPacienteScreen';
+import RegistroPacienteScreen from '../screens/RegistroPacienteScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ export default function AppNavigator() {
           // Rutas autenticadas
           <>
             <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Inicio' }} />
+            <Stack.Screen name="RegistroPaciente" component={RegistroPacienteScreen} options={{ title: 'Registrar Paciente' }} />
             <Stack.Screen name="RegistroControl" component={RegistroControlScreen} options={{ title: 'Nuevo Control' }} />
             <Stack.Screen name="HistorialPaciente" component={HistorialPacienteScreen} options={{ title: 'Historial Clínico' }} />
           </>

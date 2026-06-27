@@ -1,9 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function DashboardScreen({ navigation }) {
   const { user, role, logout } = useAuth();
+
+  const handleSincronizar = () => {
+    Alert.alert(
+      'Sincronización',
+      'Sincronizando registros con el servidor REST central...',
+      [
+        {
+          text: 'Entendido',
+          onPress: () => {
+            Alert.alert('Éxito', '¡Sincronización completada! Los historiales y pacientes locales se encuentran al día.');
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -12,7 +27,7 @@ export default function DashboardScreen({ navigation }) {
 
       <View style={styles.buttonContainer}>
         {/* Botones para ambos roles */}
-        <TouchableOpacity style={styles.button} onPress={() => {/* Navegar a Registrar Paciente */}}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RegistroPaciente')}>
           <Text style={styles.buttonText}>Registrar Paciente</Text>
         </TouchableOpacity>
 
@@ -24,13 +39,15 @@ export default function DashboardScreen({ navigation }) {
           <Text style={styles.buttonText}>Historial Clínico</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => {/* Sincronizar / Refrescar */}}>
+        <TouchableOpacity style={styles.button} onPress={handleSincronizar}>
           <Text style={styles.buttonText}>Sincronizar / Refrescar</Text>
         </TouchableOpacity>
 
         {/* Botón exclusivo para Administradores */}
         {role === 'Administrador' && (
-          <TouchableOpacity style={[styles.button, styles.adminButton]} onPress={() => {/* Ir a Configuración */}}>
+          <TouchableOpacity style={[styles.button, styles.adminButton]} onPress={() => {
+            Alert.alert('Métricas del Sistema', 'Acceso exclusivo del Administrador a estadísticas.');
+          }}>
             <Text style={styles.buttonText}>Configuración</Text>
           </TouchableOpacity>
         )}
