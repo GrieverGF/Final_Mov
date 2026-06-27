@@ -38,3 +38,6 @@ pgdata/
 
 # Screenshots
 *.png
+
+# Documentación local privada
+explicacion_codigo.md
